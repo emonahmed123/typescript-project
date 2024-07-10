@@ -7,6 +7,7 @@ export default [
     ignores: ["node_modules/", "dist/"], // Add your ignore patterns here
   },
   { extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"] },
+
   {
     files: ["/*.ts"], // Specify file extensions to lint
 

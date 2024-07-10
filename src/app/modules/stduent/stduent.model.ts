@@ -1,12 +1,18 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt'
 import {
-  Guardian,
-  LocalGuardian,
-  Student,
-  UserName,
+  TLocalGuardian,
+
+ TStudent,
+  // StudentMethod,
+  StudentModle,
+  TUserName,
+  TGuardian,
 } from './stduent.interfeace';
 import validator from 'validator';
-const userNameSchema = new Schema<UserName>({
+import { any } from 'joi';
+import config from '../../config';
+const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     trim: true,
@@ -37,7 +43,7 @@ const userNameSchema = new Schema<UserName>({
   },
 });
 
-const guardianSchema = new Schema<Guardian>({
+const guardianSchema = new Schema<TGuardian>({
   fatherName: {
     type: String,
     required: [true, 'Father Name is required'],
@@ -64,7 +70,7 @@ const guardianSchema = new Schema<Guardian>({
   },
 });
 
-const localGuardianSchema = new Schema<LocalGuardian>({
+const localGuardianSchema = new Schema<TLocalGuardian>({
   name: {
     type: String,
     required: [true, 'Name is required'],
@@ -83,8 +89,12 @@ const localGuardianSchema = new Schema<LocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<Student>({
+const studentSchema = new Schema<TStudent ,StudentModle>({
   id: { type: String, required: [true, 'ID is required'], unique: true },
+  password:{
+    type:String,
+    maxlength:[20,'must have be twenty']
+  },
   name: {
     type: userNameSchema,
     required: [true, 'Name is required'],
@@ -137,6 +147,74 @@ const studentSchema = new Schema<Student>({
     enum: ['active', 'blocked'],
     default: 'active',
   },
-});
+  isDeleted:{
+    type:Boolean,
+    default:false
+  }
+},{
 
-export const StudentModel = model<Student>('Student', studentSchema);
+ toJSON:{
+  virtuals:true
+ }
+}
+);
+
+
+//virtual 
+
+studentSchema.virtual('fullName').get(function(){
+  return (
+    `${this.name.firstName}  ${this.name.lastName}`
+  )
+})
+
+//custom instance method
+
+// studentSchema.methods.isUserExits=async function (id:string) {
+//   const existingUser =await Student.findOne({id})
+
+//   return existingUser
+// }
+
+//pre save middeaware /hook
+
+studentSchema.pre('save', async function(){
+  // 
+   const user=this
+ user.password=await  bcrypt.hash(user.password,Number(config.bcrypt_salt_rounds))
+})
+
+
+
+//post save middleware /
+
+studentSchema.post('save', function(doc,next){
+   doc.password = ''
+
+   next()
+})
+
+
+// query middeleware
+
+studentSchema.pre('find',function(next){
+
+this.find({isDeleted:{$ne:true}});
+next()
+
+})
+studentSchema.pre('findOne',function(next){
+
+this.find({isDeleted:{$ne:true}});
+next()
+
+})
+
+
+
+studentSchema.statics.isUserExits=async function (id:string) {
+  const  existingUser =await Student.findOne({id});
+  return existingUser
+}
+
+export const Student= model<TStudent,StudentModle>('Student', studentSchema);
