@@ -1,21 +1,23 @@
-import { z } from "zod";
-
-
-
-
-
-
-
-
-
+import { z } from 'zod';
 
 const userNameValidattionSchema = z.object({
-  firstName: z.string().trim().max(20, 'First Name can not be more than 20').refine((value) => {
-    const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
-    return value === firstNameStr;
-  }, { message: '{VALUE} IS NOT CAPITAILIZE FORMAT' }),
+  firstName: z
+    .string()
+    .trim()
+    .max(20, 'First Name can not be more than 20')
+    .refine(
+      (value) => {
+        const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
+        return value === firstNameStr;
+      },
+      { message: '{VALUE} IS NOT CAPITAILIZE FORMAT' },
+    ),
   middleName: z.string().optional(),
-  lastName: z.string().refine((value) => /^[A-Za-z]+$/.test(value), { message: '{VALUE} IS NOT VALID' }),
+  lastName: z
+    .string()
+    .refine((value) => /^[A-Za-z]+$/.test(value), {
+      message: '{VALUE} IS NOT VALID',
+    }),
 });
 
 // Guardian Schema
@@ -40,23 +42,23 @@ const localGuardianValidationSchema = z.object({
 const studentValidationSchema = z.object({
   id: z.string(),
   name: userNameValidattionSchema,
-  password:z.string(),
+  password: z.string(),
   gender: z.enum(['male', 'female', 'other']),
   dateOfBirth: z.string().optional(),
   email: z.string().email({ message: '{VALUE} is not valid email type' }),
   contactNo: z.string(),
   emergencyContactNo: z.string(),
-  bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional(),
+  bloodGroup: z
+    .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+    .optional(),
   presentAddress: z.string(),
   permanentAddres: z.string(),
   guardian: guardianValidationSchema,
   localGuardian: localGuardianValidationSchema,
   profileImg: z.string().optional(),
   isActive: z.enum(['active', 'blocked']).default('active'),
-  isDeleted:z.boolean()
+  isDeleted: z.boolean(),
 });
-
-
 
 // Example data
 const studentData = {
@@ -92,28 +94,7 @@ const studentData = {
   isActive: 'active',
 };
 
-
-
-
-
-export default  studentValidationSchema
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default studentValidationSchema;
 
 // import Joi from 'joi';
 // // creating a schema validtion suing joi

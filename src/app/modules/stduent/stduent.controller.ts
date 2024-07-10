@@ -3,7 +3,7 @@ import { StudentServices } from './stduent.service';
 // import Joi from 'joi';
 // import studentValidationSchema from './student.validation';
 
-import { z } from "zod";
+import { z } from 'zod';
 import studentValidationSchema from './student.validation';
 
 const createStudent = async (req: Request, res: Response) => {
@@ -12,8 +12,7 @@ const createStudent = async (req: Request, res: Response) => {
 
     // const { error, value } = studentValidationSchema.validate(stduentData);
 
- const zodparseData = studentValidationSchema.parse(stduentData)
-
+    const zodparseData = studentValidationSchema.parse(stduentData);
 
     const result = await StudentServices.createStudentIntoDb(zodparseData);
     // if (error) {
@@ -29,10 +28,10 @@ const createStudent = async (req: Request, res: Response) => {
       message: 'Student is created succesfully',
       data: result,
     });
-  } catch (err:any) {
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: err.message||'something went wrong',
+      message: err.message || 'something went wrong',
       data: err,
     });
   }
@@ -95,5 +94,5 @@ export const StudentController = {
   createStudent,
   getAllStudents,
   getSingleStudent,
-  deleteStudent
+  deleteStudent,
 };

@@ -1,9 +1,8 @@
-import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt'
+import { Schema, Types, model } from 'mongoose';
+import bcrypt from 'bcrypt';
 import {
   TLocalGuardian,
-
- TStudent,
+  TStudent,
   // StudentMethod,
   StudentModle,
   TUserName,
@@ -89,84 +88,81 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<TStudent ,StudentModle>({
-  id: { type: String, required: [true, 'ID is required'], unique: true },
-  password:{
-    type:String,
-    maxlength:[20,'must have be twenty']
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, 'Name is required'],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female', 'other'],
-      message: '{VALUE} is not valid',
+const studentSchema = new Schema<TStudent, StudentModle>(
+  {
+    id: { type: String, required: [true, 'ID is required'], unique: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User ID is Requried'],
+      unique: true,
+      ref: 'User',
     },
-  },
-  dateOfBirth: { type: String },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    validate: {
-      validator: (value: string) => validator.isEmail(value),
-      message: '{VALUE} is not vaild email type   ',
-    },
-  },
-  contactNo: { type: String, required: [true, 'Contact No is required'] },
-  emergencyContactNo: {
-    type: String,
-    required: [true, 'Emergency Contact No is required'],
-  },
-  bloodGroup: {
-    type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-  },
-  presentAddress: {
-    type: String,
-    required: [true, 'Present Address is required'],
-  },
-  permanentAddres: {
-    type: String,
-    required: [true, 'Permanent Address is required'],
-  },
-  guardian: {
-    type: guardianSchema,
-    required: [true, 'Guardian is required'],
-  },
-  localGuardian: {
-    type: localGuardianSchema,
-    required: [true, 'Local Guardian is required'],
-  },
-  profileImg: { type: String },
-  isActive: {
-    type: String,
-    enum: ['active', 'blocked'],
-    default: 'active',
-  },
-  isDeleted:{
-    type:Boolean,
-    default:false
-  }
-},{
 
- toJSON:{
-  virtuals:true
- }
-}
+    name: {
+      type: userNameSchema,
+      required: [true, 'Name is required'],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female', 'other'],
+        message: '{VALUE} is not valid',
+      },
+    },
+    dateOfBirth: { type: String },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      validate: {
+        validator: (value: string) => validator.isEmail(value),
+        message: '{VALUE} is not vaild email type   ',
+      },
+    },
+    contactNo: { type: String, required: [true, 'Contact No is required'] },
+    emergencyContactNo: {
+      type: String,
+      required: [true, 'Emergency Contact No is required'],
+    },
+    bloodGroup: {
+      type: String,
+      enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present Address is required'],
+    },
+    permanentAddres: {
+      type: String,
+      required: [true, 'Permanent Address is required'],
+    },
+    guardian: {
+      type: guardianSchema,
+      required: [true, 'Guardian is required'],
+    },
+    localGuardian: {
+      type: localGuardianSchema,
+      required: [true, 'Local Guardian is required'],
+    },
+    profileImg: { type: String },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  },
 );
 
+//virtual
 
-//virtual 
-
-studentSchema.virtual('fullName').get(function(){
-  return (
-    `${this.name.firstName}  ${this.name.lastName}`
-  )
-})
+studentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName}  ${this.name.lastName}`;
+});
 
 //custom instance method
 
@@ -178,43 +174,20 @@ studentSchema.virtual('fullName').get(function(){
 
 //pre save middeaware /hook
 
-studentSchema.pre('save', async function(){
-  // 
-   const user=this
- user.password=await  bcrypt.hash(user.password,Number(config.bcrypt_salt_rounds))
-})
-
-
-
-//post save middleware /
-
-studentSchema.post('save', function(doc,next){
-   doc.password = ''
-
-   next()
-})
-
-
 // query middeleware
 
-studentSchema.pre('find',function(next){
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
 
-this.find({isDeleted:{$ne:true}});
-next()
+studentSchema.statics.isUserExits = async function (id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser;
+};
 
-})
-studentSchema.pre('findOne',function(next){
-
-this.find({isDeleted:{$ne:true}});
-next()
-
-})
-
-
-
-studentSchema.statics.isUserExits=async function (id:string) {
-  const  existingUser =await Student.findOne({id});
-  return existingUser
-}
-
-export const Student= model<TStudent,StudentModle>('Student', studentSchema);
+export const Student = model<TStudent, StudentModle>('Student', studentSchema);
