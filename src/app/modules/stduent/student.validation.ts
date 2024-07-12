@@ -39,62 +39,67 @@ const localGuardianValidationSchema = z.object({
 });
 
 // Student Schema
-const studentValidationSchema = z.object({
-  id: z.string(),
-  name: userNameValidattionSchema,
-  password: z.string(),
-  gender: z.enum(['male', 'female', 'other']),
-  dateOfBirth: z.string().optional(),
-  email: z.string().email({ message: '{VALUE} is not valid email type' }),
-  contactNo: z.string(),
-  emergencyContactNo: z.string(),
-  bloodGroup: z
-    .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
-    .optional(),
-  presentAddress: z.string(),
-  permanentAddres: z.string(),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianValidationSchema,
-  profileImg: z.string().optional(),
-  isActive: z.enum(['active', 'blocked']).default('active'),
-  isDeleted: z.boolean(),
+const createstudentValidationSchema = z.object({
+  body:z.object({
+    password: z.string(),
+    student:z.object({
+      name: userNameValidattionSchema,
+   
+    gender: z.enum(['male', 'female', 'other']),
+    dateOfBirth: z.string().optional(),
+    email: z.string().email({ message: '{VALUE} is not valid email type' }),
+    contactNo: z.string(),
+    emergencyContactNo: z.string(),
+    bloodGroup: z
+      .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+      .optional(),
+    presentAddress: z.string(),
+    permanentAddres: z.string(),
+    guardian: guardianValidationSchema,
+    localGuardian: localGuardianValidationSchema,
+    profileImg: z.string().optional(),
+   
+    })
+  })
 });
 
 // Example data
-const studentData = {
-  id: '12345',
-  name: {
-    firstName: 'John',
-    middleName: 'Doe',
-    lastName: 'Smith',
-  },
-  gender: 'male',
-  dateOfBirth: '2000-01-01',
-  email: 'john.doe@example.com',
-  contactNo: '1234567890',
-  emergencyContactNo: '0987654321',
-  bloodGroup: 'A+',
-  presentAddress: '123 Main St',
-  permanentAddress: '456 Secondary St',
-  guardian: {
-    fatherName: 'John Sr.',
-    fatherOccupation: 'Engineer',
-    fatherContactNo: '1234567890',
-    motherName: 'Jane',
-    motherOccupation: 'Doctor',
-    motherContactNo: '0987654321',
-  },
-  localGuardian: {
-    name: 'Uncle Bob',
-    occupation: 'Teacher',
-    contactNo: '1122334455',
-    address: '789 Tertiary St',
-  },
-  profileImg: 'http://example.com/profile.jpg',
-  isActive: 'active',
-};
+// const studentData = {
+//   id: '12345',
+//   name: {
+//     firstName: 'John',
+//     middleName: 'Doe',
+//     lastName: 'Smith',
+//   },
+//   gender: 'male',
+//   dateOfBirth: '2000-01-01',
+//   email: 'john.doe@example.com',
+//   contactNo: '1234567890',
+//   emergencyContactNo: '0987654321',
+//   bloodGroup: 'A+',
+//   presentAddress: '123 Main St',
+//   permanentAddress: '456 Secondary St',
+//   guardian: {
+//     fatherName: 'John Sr.',
+//     fatherOccupation: 'Engineer',
+//     fatherContactNo: '1234567890',
+//     motherName: 'Jane',
+//     motherOccupation: 'Doctor',
+//     motherContactNo: '0987654321',
+//   },
+//   localGuardian: {
+//     name: 'Uncle Bob',
+//     occupation: 'Teacher',
+//     contactNo: '1122334455',
+//     address: '789 Tertiary St',
+//   },
+//   profileImg: 'http://example.com/profile.jpg',
+//   isActive: 'active',
+// };
 
-export default studentValidationSchema;
+export const studentValidations={
+  createstudentValidationSchema
+};
 
 // import Joi from 'joi';
 // // creating a schema validtion suing joi

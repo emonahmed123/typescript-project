@@ -24,10 +24,10 @@ export type TLocalGuardian = {
 
 export type TStudent = {
   id: string;
-  user: Types.ObjectId;
+  user:Types.ObjectId;
   name: TUserName;
-  password: string;
-  gender: 'male' | 'female' | 'other';
+
+  gender: 'male' | 'female'|'other';
   dateOfBirth?: string;
   email: string;
   contactNo: string;
@@ -39,12 +39,22 @@ export type TStudent = {
   localGuardian: TLocalGuardian;
   profileImg?: string;
 
-  isDeleted: boolean;
+  isDeleted:boolean
 };
 
-export interface StudentModle extends Model<TStudent> {
-  isUserExits(id: string): Promise<TStudent | null>;
+
+ export interface StudentModle extends Model<TStudent>{
+
+  isUserExits(id:string):Promise<TStudent|null>
+
+
+
+
 }
+
+
+
+
 
 //for creating instance
 // export type StudentMethod ={

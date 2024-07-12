@@ -1,10 +1,15 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { StudentServices } from './stduent.service';
 // import Joi from 'joi';
 // import studentValidationSchema from './student.validation';
 
-import { z } from 'zod';
+import { promise, z } from 'zod';
 import studentValidationSchema from './student.validation';
+import sendResponse from '../../utils/sendResponse';
+import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+
+
 
 const createStudent = async (req: Request, res: Response) => {
   try {
@@ -14,7 +19,7 @@ const createStudent = async (req: Request, res: Response) => {
 
     const zodparseData = studentValidationSchema.parse(stduentData);
 
-    const result = await StudentServices.createStudentIntoDb(zodparseData);
+    // const result = await 
     // if (error) {
     //   res.status(500).json({
     //     success: false,
@@ -37,21 +42,22 @@ const createStudent = async (req: Request, res: Response) => {
   }
 };
 
-const getAllStudents = async (req: Request, res: Response) => {
-  try {
+
+const getAllStudents =catchAsync(  async (req: Request, res: Response,next:NextFunction) => {
+ 
     const result = await StudentServices.getAllStudentsFromDB();
 
-    res.status(200).json({
-      success: true,
-      message: 'Students are retrieved succesfully',
-      data: result,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
+    sendResponse(res,{
+      statusCode:httpStatus.OK,
+      success:true,
+      message:'Stduent isretrieved succesfully',
+      data:result
+    })
+});
 
-const getSingleStudent = async (req: Request, res: Response) => {
+
+
+const getSingleStudent = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { studentId } = req.params;
 
@@ -63,14 +69,14 @@ const getSingleStudent = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Student is retrieved succesfully',
-      data: err,
-    });
+  
+    next(err)
   }
 };
-const deleteStudent = async (req: Request, res: Response) => {
+
+
+
+const deleteStudent = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { studentId } = req.params;
 
@@ -82,11 +88,7 @@ const deleteStudent = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Not delete',
-      data: err,
-    });
+   next(err)
   }
 };
 
