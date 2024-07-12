@@ -109,7 +109,7 @@ const studentSchema = new Schema<TStudent ,StudentModle>({
       message: '{VALUE} is not valid',
     },
   },
-  dateOfBirth: { type: String },
+  dateOfBirth: { type:Date},
   email: {
     type: String,
     required: [true, 'Email is required'],
