@@ -5,48 +5,49 @@ import config from '../../config';
 
 import { TAcademicDepartment } from './academicDepartment.interface';
 import httpStatus from 'http-status';
+import AppError from '../../error/appError';
 
 const academicDepartmentSchema = new Schema<TAcademicDepartment>(
   {
     name: {
       type: String,
       require: true,
-      unique:true
+      unique: true,
     },
-    academicFaculty:{
-      type:Schema.Types.ObjectId,
-      ref:'AcademicFaculty'
-    }
-
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicFaculty',
+    },
   },
   {
     timestamps: true,
   },
 );
 
+academicDepartmentSchema.pre('save', async function (next) {
+  const isDepartemntExits = await AcademicDepartment.findOne({
+    name: this.name,
+  });
 
-academicDepartmentSchema.pre('save',async function(next){
-  const isDepartemntExits =await AcademicDepartment.findOne({
-    name:this.name
-  })
-
-  if(isDepartemntExits){
-    throw new Error ('This Department is already exist!')
+  if (isDepartemntExits) {
+    throw new Error('This Department is already exist!');
   }
-  next()
-})
+  next();
+});
 academicDepartmentSchema.pre('findOneAndUpdate', async function (next) {
   const query = this.getQuery();
   const isDepartmentExist = await AcademicDepartment.findOne(query);
 
   if (!isDepartmentExist) {
-    throw new Error(
-   
+    throw new AppError(
+      httpStatus.NOT_FOUND,
       'This department does not exist! ',
     );
   }
-
   next();
 });
 
-export const AcademicDepartment = model<TAcademicDepartment>('AcademicDepartment', academicDepartmentSchema);
+export const AcademicDepartment = model<TAcademicDepartment>(
+  'AcademicDepartment',
+  academicDepartmentSchema,
+);

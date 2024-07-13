@@ -1,4 +1,4 @@
-import express, { Request, Application, Response, NextFunction,  } from 'express';
+import express, { Request, Application, Response, NextFunction } from 'express';
 
 import cors from 'cors';
 import { StudentRoutes } from './app/modules/stduent/stduent.route';
@@ -12,8 +12,7 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/v1/',router);
-
+app.use('/api/v1/', router);
 
 const getAController = (req: Request, res: Response) => {
   res.send('Hello World!');
@@ -21,9 +20,7 @@ const getAController = (req: Request, res: Response) => {
 
 app.get('/', getAController);
 
-app.use(gobleErrorhandler)
-app.use(notFound)
-
-
+app.use(gobleErrorhandler);
+app.use(notFound);
 
 export default app;

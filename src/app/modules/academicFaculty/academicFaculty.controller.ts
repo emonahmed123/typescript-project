@@ -3,7 +3,6 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AcademicFacultyServices } from './academicFacultyValidationSchema.srvice';
 
-
 const createAcademicFaculty = catchAsync(async (req, res) => {
   const result = await AcademicFacultyServices.createAcademicFacultyIntoDB(
     req.body,
@@ -56,7 +55,7 @@ const updateAcademicFaculty = catchAsync(async (req, res) => {
   });
 });
 
-export const AcademicFacultyControllers={
+export const AcademicFacultyControllers = {
   createAcademicFaculty,
   getAllAcademicFaculties,
   getSingleAcademicFaculty,
