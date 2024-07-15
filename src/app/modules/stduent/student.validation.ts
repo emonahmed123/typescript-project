@@ -61,7 +61,6 @@ const createstudentValidationSchema = z.object({
   }),
 });
 
-
 const updateUserNameValidationSchema = z.object({
   firstName: z.string().min(1).max(20).optional(),
   middleName: z.string().optional(),
@@ -107,8 +106,6 @@ export const updateStudentValidationSchema = z.object({
   }),
 });
 
-
-
 // Example data
 // const studentData = {
 //   id: '12345',
@@ -145,7 +142,7 @@ export const updateStudentValidationSchema = z.object({
 
 export const studentValidations = {
   createstudentValidationSchema,
-  updateStudentValidationSchema
+  updateStudentValidationSchema,
 };
 
 // import Joi from 'joi';

@@ -34,40 +34,41 @@ const getSingleStudentFromDB = async (id: string) => {
   return result;
 };
 const deleteStudentFromDB = async (id: string) => {
+  const session = await mongoose.startSession();
 
-const session =await mongoose.startSession()
+  try {
+    session.startTransaction();
 
-try {
-   session.startTransaction()
+    const deletedStudent = await Student.findOneAndUpdate(
+      { id },
+      { isDeleted: true },
 
-  const  deletedStudent = await Student.findOneAndUpdate({ id }, { isDeleted: true },
+      { new: true, session },
+    );
+    if (!deletedStudent) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Faild to delete student ');
+    }
 
-{new:true,session}
+    const deleteUser = await User.findOneAndUpdate(
+      { id },
+      { isDeleted: true },
+      { new: true, session },
+    );
 
-  );
-if(!deletedStudent){
-  throw new AppError(httpStatus.BAD_REQUEST,'Faild to delete student ')
-}
+    if (!deleteUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Faild to delete user ');
+    }
 
-const deleteUser =await User.findOneAndUpdate({id},{isDeleted:true},{new:true,session})
+    await session.commitTransaction();
+    await session.endSession();
 
-if(!deleteUser){
-  throw new AppError(httpStatus.BAD_REQUEST,'Faild to delete user ')
-}
+    return deletedStudent;
+  } catch (err) {
+    await session.abortTransaction();
+    await session.endSession();
 
-await session.commitTransaction()
-await session.endSession()
-
-  return deletedStudent ;
-
-
-} catch (err) {
-  
-  await session.abortTransaction();
-  await session.endSession()
-}
-
-
+    throw new Error('student not Deleted')
+  }
 };
 
 const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
@@ -115,11 +116,10 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
   return result;
 };
 
-
 export const StudentServices = {
   getAllStudentsFromDB,
   createStudentIntoDb,
   getSingleStudentFromDB,
   deleteStudentFromDB,
-  updateStudentIntoDB
+  updateStudentIntoDB,
 };

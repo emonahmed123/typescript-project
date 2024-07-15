@@ -24,7 +24,7 @@ const createStudent = async (
     });
   } catch (err: any) {
     next(err);
-    throw new Error('Failed to create student');
+
   }
 };
 

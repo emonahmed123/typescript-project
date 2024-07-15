@@ -65,9 +65,6 @@ const deleteStudent = catchAsync(async (req, res) => {
   });
 });
 
-
-
-
 const getSingleStudent = async (
   req: Request,
   res: Response,
@@ -100,11 +97,9 @@ const updateStudent = catchAsync(async (req, res) => {
   });
 });
 
-
 export const StudentController = {
-
   getAllStudents,
   getSingleStudent,
   deleteStudent,
-  updateStudent 
+  updateStudent,
 };
