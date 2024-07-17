@@ -4,7 +4,13 @@ import { Student } from './stduent.model';
 import AppError from '../../error/appError';
 import { User } from '../user/user.model';
 import httpStatus from 'http-status';
+import QueryBuilder from '../../builder/QueryBuilder';
 
+ const studentSearchableFields = [
+  'email',
+  'name.firstName',
+  'presentAddress',
+];
 const createStudentIntoDb = async (studentData: TStudent) => {
   if (await Student.isUserExits(studentData.id)) {
     throw new Error('User Alreay Exists');
@@ -24,15 +30,40 @@ const createStudentIntoDb = async (studentData: TStudent) => {
   return result;
 };
 
-const getAllStudentsFromDB = async () => {
-  const result = await Student.find();
+
+const getAllStudentsFromDB = async (query:Record<string,unknown>) => {
+
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+     query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await studentQuery.modelQuery;
   return result;
+
+ 
 };
+
+
 
 const getSingleStudentFromDB = async (id: string) => {
   const result = await Student.findOne({ id });
   return result;
 };
+
+
 const deleteStudentFromDB = async (id: string) => {
   const session = await mongoose.startSession();
 

@@ -15,6 +15,8 @@ app.use(express.json());
 app.use('/api/v1/', router);
 
 const getAController = (req: Request, res: Response) => {
+
+ 
   res.send('Hello World!');
 };
 
