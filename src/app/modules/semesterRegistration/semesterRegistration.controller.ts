@@ -174,13 +174,6 @@ const deleteSemesterRegistration = catchAsync(
   },
 );
 
-export const SemesterRegistrationController = {
-  createSemesterRegistration,
-  getAllSemesterRegistrations,
-  getSingleSemesterRegistration,
-  updateSemesterRegistration,
-  deleteSemesterRegistration,
-};
 
 export const SemesterRegistrationController = {
   createSemesterRegistration,
