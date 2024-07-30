@@ -2,13 +2,14 @@ import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 
-import { OfferedCourse } from '../OfferedCourse/OfferedCourse.model';
+
 
 import { RegistrationStatus } from './semesterRegistration.constant';
 import { TSemesterRegistration } from './semesterRegistration.interface';
 import { SemesterRegistration } from './semesterRegistration.model';
 import AppError from '../../error/appError';
 import { AcademicSemester } from '../AcademicSemester/academicSemester.model';
+import { OfferedCourse } from '../OfferedCourse/OfferedCourse.model';
 
 const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistration,
